@@ -12,7 +12,7 @@ from numpy.linalg import *
 
 
 
-def default_distance(first_patch , second_patch):
+def default_patch_difference(first_patch , second_patch):
 	print first_patch , second_patch
 	return 1
 
@@ -32,12 +32,9 @@ def initialize_nearest_neighbor_field(nnf_size , patch_size):
 
 	return nnf
 
-def nearest_neighbor_field(first_image , second_image , distance_function=default_distance , patch_size=(1 , 1)):
-	#first_image_1d = reshape(first_image , (-1 , 1))
-	#second_image_1d = reshape(second_image , (-1 , 1))
-
-	#patch_size_1d = reshape(patch_size , (-1 , 1))
-
+def nearest_neighbor_field(first_image , second_image , difference_function=default_patch_difference , patch_size=(1 , 1)):
+	patch_difference_threshold = 10	
+	
 	nnf = initialize_nearest_neighbor_field(first_image.shape , patch_size)
 	
 	print patch_size
@@ -61,7 +58,14 @@ def nearest_neighbor_field(first_image , second_image , distance_function=defaul
 				print second_image_offset[0] , second_image_offset[1]
 				
 				second_image_patch = second_image[(second_image_offset[0] , second_image_offset[1])]
-				distance = distance_function(first_image_patch , second_image_patch)
+				patch_difference = difference_function(first_image_patch , second_image_patch)
 
+				if patch_difference < patch_difference_threshold:
+					nnf[x - 1 , y] = second_image_offset
+					nnf[x , y - 1] = second_image_offset
+				else:
+					nnf[x , y , 0] = random_integers(patch_size[0] , nnf_size[0] - patch_size[0] , nnf_size)
+					nnf[x , y , 1] = random_integers(patch_size[1] , nnf_size[1] - patch_size[1] , nnf_size)
 
+				
 nearest_neighbor_field(zeros((256 , 256)) , zeros((256 , 256)))
