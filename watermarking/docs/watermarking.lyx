@@ -1,0 +1,998 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass ieee
+\begin_preamble
+% With LyX, the document-class modifiers are entered in
+% the Layout>Document dialog, in the "Extra options" box.
+% The main modes are: draft, submission, compressed, final
+% This document defaults to "final"
+% The possible sub-modes are: technote, internal, submitted
+% inpress, reprint
+% The default is (none)
+% The possible misc-options are: titlepage, notitlepage,
+% anonymous, narroweqnarray, inline, twoside, invited
+
+% Plug-in files are invoked here, such as:
+%\usepackage{ieeetsp} % if you want the "trans sigpro" style
+%\usepackage{ieeetc}  % for the "trans comp" style
+%\usepackage{ieeeimtc} % for the IMTC conference style
+
+% Use the `endfloat' package to move figures and tables to the end
+% of the paper. Useful for `submission' mode.
+%\usepackage {endfloat}
+
+% Use the `times' package to use Helvetica and Times-Roman fonts
+% instead of the standard Computer Modern fonts. Useful for the 
+% IEEE Computer Society transactions.
+% (Note: If you have the commercial package `mathtime,' it is much
+% better, but the `times' package works too).
+%\usepackage {times}
+
+% In order to use the figure-defining commands in ieeefig.sty...
+%\usepackage{ieeefig}
+
+% To override the main LyX title, (such as to add a 
+% short title in [ ] for page headers,
+\title[]{Human Visual System Based Watermarking}
+
+% To override the main LyX authors, (such as to add 
+% short names in [ ] and IEEE membership information and
+% author information... (for a journal paper)
+\author[]{Robert Schriver}
+
+
+% for a conference proceedings, add \\ after each line of
+% authorinfo
+%\author[Doe \emph{et. al.}]{John Doe\member{Student
+  %Member},\authorinfo{Department of Electrical Engineering, \\  
+  %...}%
+%\and Jane Doe\member{Member},\authorinfo{Department of Mathematics, \\
+  %...}%
+%\and{}and Bob Doe\member{Fellow}\authorinfo{Department of ... }
+%}
+
+% Place \journal, \confplacedate etc stuff here.
+%\journal{IEEE Transactions on Something}
+%\titletext{, VOL. xx, NO. YY, Month Year}
+%\ieeecopyright{xxxx-xxxx/xx\$xx.xx \copyright\ 2000 IEEE}
+%\lognumber{xxxxxx}
+%\pubitemident{S xxxx-xxxx(xx)xxxxx--x}
+%\loginfo{Manuscript received date}
+%\firstpage{1}
+%\confplacedate{Ottawa, Canada, May 19--21, 1997}
+\end_preamble
+\options final
+\use_default_options false
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding latin1
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 0
+\use_mhchem 0
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+This is not the title.
+ See notes below.
+\end_layout
+
+\begin_layout Author
+John Doe, Jane Doe and Bob Doe
+\end_layout
+
+\begin_layout Abstract
+We attempt to show a method below of hiding and extracting a watermark in
+ an image in the spatial domain such that we minimize the visual effect
+ of the watermark on the image while still maintaining watermark integrity.
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout PARstart
+Digital watermarking is the attempt to craft an image in such a fashion
+ that if we apply a simple set of transforms, we are able to extract a watermark
+ which will identify the image as our own.
+ Thus, if someone claims the image as theirs, we can demonstrate that they
+ have taken the image from us, and use our embedded watermark as proof of
+ this fact.
+ However, we must try to make this watermark as robust as possible so that
+ if a person modifies your image, you are still able to extract the watermark
+ and prove that it is yours.
+ We also must consider that the watermark should not be visible, so that
+ the content of the image remains.
+\end_layout
+
+\begin_layout Section
+Background
+\end_layout
+
+\begin_layout Standard
+Much of the paper by Qi et al 
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Human visual system based adaptive digital image watermarking; Huiyan Qi,
+ Dong Zheng, Jiying Zhao
+\end_layout
+
+\end_inset
+
+ describes a technique by which the watermark can be more easily blended
+ into the image.
+ They propose the creation of a Human Visual System Mask, which attempts
+ to hide the watermark in areas of the image where it would be less noticable.
+ It accomplishes this by combining together three other masks, called the
+ luminance mask, edge mask, and texture mask.
+ The luminance mask is a combination of the background luminance, which
+ is just the average of the surrounding pixels, and the maximum gradient
+ of a series of derivative filters at different angles.
+ This luminance filter highlights large dark areas and high energy components
+ of an image.
+ The edge mask just uses the Canny edge algorithm 
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+A Computational Approach to Edge Detection; Canny, John
+\end_layout
+
+\end_inset
+
+, which provides a response even with faint edges.
+ To complete the edge mask, a dilation filter is applied that simply widens
+ the edge mask.
+ The texture filter is simply the difference between the center pixel and
+ the mean of the surround.
+ These mask are all combined and added to the image in a method I will describe
+ in the section below.
+ The actual watermarking algorithm is comparatively simple.
+ A binary message image is generated that is 
+\begin_inset Formula $\frac{1}{16}$
+\end_inset
+
+th the size of the image, as well as a 
+\begin_inset Formula $4\times4$
+\end_inset
+
+ random watermark with values 1 and -1.
+ If the message bit is a 1, the watermark is added to a corresponding 
+\begin_inset Formula $4\times4$
+\end_inset
+
+ block in the image that has the HVS mask applied.
+ If the message bit is 0, then the watermark is subtracted.
+ Since the image block is normalized by the HVS mask during this step, the
+ watermark is embedded in the masked image, and it is more strongly embedded
+ where the HVS mask is larger.
+ To extract the message, we simple de-normalize based on the HVS mask, and
+ then compare to the watermark we used to embed the message.
+ If it matches, the message bit is a one, and if it doesn't, the message
+ bit is a zero.
+\end_layout
+
+\begin_layout Section
+Method
+\end_layout
+
+\begin_layout Standard
+The implementation is mostly just taking the math and translating it into
+ 
+\begin_inset Formula $n\times n$
+\end_inset
+
+ filters, and since the math was discussed in the previous section I will
+ talk mostly about the results of filter creation and the combination of
+ the HVS masking and the image, as well as some changes which I made that
+ are different than the source paper and the reasons I made those changes.
+ I was able to achieve almost identical masks for all three different filters,
+ which you can see above.
+ The combination of these masks is not strictly multiplication, the minimum
+ of the edge and texture mask is taken and scaled down, and then the maximum
+ of that matrix and the luminance mask is combined to form the final HVS
+ mask.
+ Since the HVS mask will eventually be divided out of the image, there must
+ be no zero values in the matrix, so there must be a base established, which
+ essentially determined the watermarking strenth in large uniform black
+ areas.
+ This value is located in the luminance mask, and the paper suggests setting
+ this value to three.
+ However, I found that setting this value slightly higher to 5 enabled much
+ greater embedding strength and gave a higher PSNR for the message when
+ errors were added.
+ The comparison of the HVS Mask and watermarked image between these two
+ values is show below, and the difference between the messages when noise
+ is added is in the results section.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement p
+wide true
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/schriver/Documents/projects/school/DIP2/watermarking/+10, 5 , 10 base/luminance.tif
+	scale 25
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/schriver/Documents/projects/school/DIP2/watermarking/+10, 5 , 10 base/texture.tif
+	scale 25
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/schriver/Documents/projects/school/DIP2/watermarking/+10, 5 , 10 base/edge.tif
+	scale 25
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/schriver/Documents/projects/school/DIP2/watermarking/+10, 5 , 10 base/hvs.tif
+	scale 25
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Luminance Mask
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Texture Mask
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Edge Mask
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+HVS Mask
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/schriver/Documents/projects/school/DIP2/watermarking/+10 3 bas3/watermarked.tif
+	scale 25
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/schriver/Documents/projects/school/DIP2/watermarking/+10, 5 , 10 base/watermarked.tif
+	scale 25
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Base Value 3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Base Value 5
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Section
+Results
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Float figure
+placement t
+wide true
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="3" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Decoded Message
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/schriver/Documents/projects/school/DIP2/watermarking/no noise/message.tif
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/schriver/Documents/projects/school/DIP2/watermarking/+10 3 bas3/decode.tif
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/schriver/Documents/projects/school/DIP2/watermarking/+10, 5 , 10 base/decode.tif
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+PSNR
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+undef.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1.384
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+8.612
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Alteration
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Original
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Base Value 3, +10
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Base Value 5, +10
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement p
+wide true
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Tabular
+<lyxtabular version="3" rows="5" columns="5">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Watermarked
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/schriver/Documents/projects/school/DIP2/watermarking/no noise/watermarked.tif
+	scale 12.5
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/schriver/Documents/projects/school/DIP2/watermarking/+10, 5 , 10 base/watermarked.tif
+	scale 12.5
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/schriver/Documents/projects/school/DIP2/watermarking/gaussian , base 5/watermarked.tif
+	scale 12.5
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/schriver/Documents/projects/school/DIP2/watermarking/crop/watermarked.tif
+	scale 12.5
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Altered
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/schriver/Documents/projects/school/DIP2/watermarking/no noise/noisy.tif
+	scale 12.5
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/schriver/Documents/projects/school/DIP2/watermarking/+10, 5 , 10 base/noisy.tif
+	scale 12.5
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/schriver/Documents/projects/school/DIP2/watermarking/gaussian , base 5/noisy.tif
+	scale 12.5
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/schriver/Documents/projects/school/DIP2/watermarking/crop/noisy.tif
+	scale 12.5
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Decoded Message
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/schriver/Documents/projects/school/DIP2/watermarking/no noise/decode.tif
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/schriver/Documents/projects/school/DIP2/watermarking/+10, 5 , 10 base/decode.tif
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/schriver/Documents/projects/school/DIP2/watermarking/gaussian , base 5/decode.tif
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename /Users/schriver/Documents/projects/school/DIP2/watermarking/crop/decode.tif
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+PSNR
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+undef.
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+8.612
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+11.287
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+14.670
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Alteration Performed
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+No Alteration
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
++10 to each pixel
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Gaussian Noise, sigma 2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Crop 64 pixel border
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Section
+Discussion
+\end_layout
+
+\begin_layout Standard
+As demonstrated in the results, the watermark is fairly weak against an
+ attack which changes every value in an image.
+ Adding 10 to each pixel in an image is hardly noticable to the observer,
+ however the result to the watermark is fairly drastic.
+ One interesting thing to note from these attacks is that in the final decoding
+ after adding 10 to each pixel, we begin to see the inverse of the HVS mask
+ coming through the message.
+ The HVS encoding phase, at the base, just adds a few pixel counts to the
+ block.
+ If we add a count uniformly in the noising phase, high values in the image
+ will be thresholded by the 255 count max.
+ These high values also correspond to low HVS mask counts.
+ When we decode using the HVS mask, it is likely that this combination of
+ thresholding and the more sensitive HVS mask for that block causes the
+ artifacts that show up.
+ We can also see, however, that the message is basically uneffected by the
+ cropping attack, as would be expected from a block based watermarking algorithm
+ like this.
+ We can see that this watermark is not very resilient against many attacks,
+ and is would be very susceptible to anything which would affect a full
+ 
+\begin_inset Formula $4\times4$
+\end_inset
+
+ block at a time.
+ While not shown in the results, the algorithm does not perform well against
+ most filtering operations like blurring.
+ Extrapolating from these results, it is also likely that it would not perform
+ well against a compression attack.
+ However, I believe that the main thrust of this paper was the Human Visual
+ System mask which was developed, which enables better hiding in the spatial
+ domain.
+ This mask could easily be paired with a more robust watermarking technique,
+ which would optimize both hiding and robustness against attack.
+\end_layout
+
+\end_body
+\end_document
